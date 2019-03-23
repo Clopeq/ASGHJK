@@ -13,8 +13,8 @@
 //-------------------------------
 // Specify sensors if CREATE chasis is used, comment for default(0, 4000)
 #ifdef CREATE
-    //#define CliffMinReading 0        // Set minimum reading value for both sensors
-    //#define CliffMaxReading 4000     // Set maximum reading value for both sensors
+    //#define CliffMinReading 700        // Set minimum reading value for both sensors
+    //#define CliffMaxReading 3000     // Set maximum reading value for both sensors
 #endif
 
 //--------------------------------------------
@@ -70,10 +70,10 @@
 
 // default cliff sensors reading
 #ifndef CliffMinReading
-    #define CliffMinReading 0
+    #define CliffMinReading 700
 #endif
 #ifndef CliffMaxReading
-    #define CliffMaxReading 4000
+    #define CliffMaxReading 3000
 #endif
 
 // default minimum speed
