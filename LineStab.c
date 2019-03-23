@@ -1,4 +1,5 @@
-#include "Funs.h"
+#include <kipr/botball.h>
+#include <math.h>
 
 /*
     double abs(double x); function is required to run LineStab
@@ -19,18 +20,16 @@
 
 //--------------------------------------------
 // Specify sensors and motors if LEGO chasis is used
-#ifdef LEGO
-    #define LeftMotor 0
-    #define RightMotor 1
+#define LeftMotor 0
+#define RightMotor 1
 
-    #define LeftTopHatPort 0
-    #define LeftTopHatMinReading 100
-    #define LeftTopHatMaxReading 4000
+#define LeftTopHatPort 0
+#define LeftTopHatMinReading 100
+#define LeftTopHatMaxReading 4000
 
-    #define RightTopHatPort 1
-    #define RightTopHatMinReading 100
-    #define RightTopHatMaxReading 4000
-#endif
+#define RightTopHatPort 1
+#define RightTopHatMinReading 100
+#define RightTopHatMaxReading 4000
 //-------------------------------
 
 // Here you can set custom speed limits,  comment for default(20, 200 for CREATE and 150, 1500 for LEGO)
@@ -57,8 +56,10 @@
 
 
 
-
-
+int map(int x, int in_min, int in_max, int out_min, int out_max) {
+// Rescale value from one range to another
+return ( x - in_min ) * (out_max - out_min) / ( in_max - in_min ) + out_min;
+} 
 
 // direction defines
 #ifndef forward
@@ -99,6 +100,11 @@
 // Level of precision
 #ifndef LevelOfPrecision
     #define LevelOfPrecision 25
+#endif
+
+// default treshold
+#ifndef TRESHOLD
+    #define TRESHOLD 3000
 #endif
 
 // set chasis
