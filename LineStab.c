@@ -1,5 +1,6 @@
 #include <kipr/botball.h>
 #include <math.h>
+#include <stdbool.h>
 
 /*
     double abs(double x); function is required to run LineStab
@@ -143,7 +144,7 @@ int LineStab(bool direction) {
                 create_drive_direct(LEFT, RIGHT);
             } else {
                 LEFT = map(analog(LeftTopHatPort), LeftTopHatMinReading, LeftTopHatMaxReading, speedL, -speedL);
-                RIGHT = map(analog(FrontR.port), RightTopHatMinReading, RightTopHatMaxReading, speedR, -speedR);
+                RIGHT = map(analog(RightTopHatPort), RightTopHatMinReading, RightTopHatMaxReading, speedR, -speedR);
                 mav(LeftMotor, LEFT);		
                 mav(RightMotor, RIGHT);	
             }
