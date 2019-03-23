@@ -132,8 +132,8 @@ int LineStab(bool direction) {
         while(i<LevelOfPrecision) {
             
             if(Chasis) { 
-                LEFT = map(get_create_lfcliff_amt(), CliffMinReading, CliffMaxReading, speedL, -speedL);
-                RIGHT = map(get_create_rfcliff_amt(), CliffMinReading, CliffMaxReading, speedR, -speedR);
+                LEFT = map(get_create_lfcliff_amt(), CliffMaxReading, CliffMinReading, speedL, -speedL);
+                RIGHT = map(get_create_rfcliff_amt(), CliffMaxReading, CliffMinReading, speedR, -speedR);
                 create_drive_direct(LEFT, RIGHT);
             } else {
                 LEFT = map(analog(LeftTopHatPort), LeftTopHatMinReading, LeftTopHatMaxReading, speedL, -speedL);
