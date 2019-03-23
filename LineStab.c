@@ -33,7 +33,7 @@
 #define RightTopHatMaxReading 4000
 //-------------------------------
 
-// Here you can set custom speed limits,  comment for default(20, 200 for CREATE and 150, 1500 for LEGO)
+// Here you can set custom speed limits,  comment for default(30, 150 for CREATE and 150, 1500 for LEGO)
 //#define minSpeed 150
 //#define maxSpeed 1500
 //-------------------------------
@@ -81,7 +81,7 @@ return ( x - in_min ) * (out_max - out_min) / ( in_max - in_min ) + out_min;
 // default minimum speed
 #ifndef minSpeed
     #ifdef CREATE
-        #define minSpeed 10
+        #define minSpeed 30
     #endif
     #ifdef LEGO
         #define minSpeed 150
@@ -91,7 +91,7 @@ return ( x - in_min ) * (out_max - out_min) / ( in_max - in_min ) + out_min;
 // default maximum speed
 #ifndef maxSpeed
     #ifdef CREATE 
-        #define maxSpeed 200
+        #define maxSpeed 150
     #endif
     #ifdef  LEGO
         #define maxSpeed 1500
