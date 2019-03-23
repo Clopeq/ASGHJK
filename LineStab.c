@@ -1,7 +1,113 @@
 #include "Funs.h"
 
-#define minSpeed 150
-#define maxSpeed 1500
+/*
+    double abs(double x); function is required to run LineStab
+    (absoulute value)
+*/
+
+/* ----------SETTING---------- */
+
+//  Choose chasis (uncomment 1 line)
+//#define CREATE
+//#define LEGO
+//-------------------------------
+// Specify sensors if CREATE chasis is used, comment for default(0, 4000)
+#ifdef CREATE
+    //#define CliffMinReading 0        // Set minimum reading value for both sensors
+    //#define CliffMaxReading 4000     // Set maximum reading value for both sensors
+#endif
+
+//--------------------------------------------
+// Specify sensors and motors if LEGO chasis is used
+#ifdef LEGO
+    #define LeftMotor 0
+    #define RightMotor 1
+
+    #define LeftTopHatPort 0
+    #define LeftTopHatMinReading 100
+    #define LeftTopHatMaxReading 4000
+
+    #define RightTopHatPort 1
+    #define RightTopHatMinReading 100
+    #define RightTopHatMaxReading 4000
+#endif
+//-------------------------------
+
+// Here you can set custom speed limits,  comment for default(20, 200 for CREATE and 150, 1500 for LEGO)
+//#define minSpeed 150
+//#define maxSpeed 1500
+//-------------------------------
+
+// Time treshold in miliseconds (time after which LineStab will terminate if line is not detected), comment for default(3000 msec)
+//#define TRESHOLD 3000
+//-------------------------------
+
+// Level of precision, comment for default(25). Default value is recommended
+//#define LevelOfPrecision 25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// direction defines
+#ifndef forward
+    #define forward 1
+#endif
+#ifndef backward
+    #define backward 0
+#endif
+
+// default cliff sensors reading
+#ifndef CliffMinReading
+    #define CliffMinReading 0
+#endif
+#ifndef CliffMaxReading
+    #define CliffMaxReading 4000
+#endif
+
+// default minimum speed
+#ifndef minSpeed
+    #ifdef CREATE
+        #define minSpeed 10
+    #endif
+    #ifdef LEGO
+        #define minSpeed 150
+    #endif
+#endif
+
+// default maximum speed
+#ifndef maxSpeed
+    #ifdef CREATE 
+        #define maxSpeed 200
+    #endif
+    #ifdef  LEGO
+        #define maxSpeed 1500
+    #endif
+#endif
+
+// Level of precision
+#ifndef LevelOfPrecision
+    #define LevelOfPrecision 25
+#endif
+
+// set chasis
+#ifdef CREATE
+    #define Chasis 1
+#endif
+#ifdef LEGO
+    #define Chasis 0
+#endif
 
 int LineStab(bool direction) {
     /*
@@ -18,26 +124,32 @@ int LineStab(bool direction) {
     int i = 0;
     bool L = false, R = false;
     int LEFT, RIGHT;
-    int speedL = 1500;
+    int speedL = maxSpeed;
     speedL *= direction==true ? 1 : -1;
     int speedR = speedL;
     
     int t = systime();
-        while(i<25) {
-            LEFT = map(analog(FrontL.port), FrontL.min, FrontL.max, speedL, -speedL);
-            RIGHT = map(analog(FrontR.port), FrontR.min, FrontR.max, speedR, -speedR);
+        while(i<LevelOfPrecision) {
             
-            mav(MotorL, LEFT);		
-            mav(MotorR, RIGHT);		
+            if(Chasis) { 
+                LEFT = map(get_create_lfcliff_amt(), CliffMinReading, CliffMaxReading, speedL, -speedL);
+                RIGHT = map(get_create_rfcliff_amt(), CliffMinReading, CliffMaxReading, speedR, -speedR);
+                create_drive_direct(LEFT, RIGHT);
+            } else {
+                LEFT = map(analog(LeftTopHatPort), LeftTopHatMinReading, LeftTopHatMaxReading, speedL, -speedL);
+                RIGHT = map(analog(FrontR.port), RightTopHatMinReading, RightTopHatMaxReading, speedR, -speedR);
+                mav(LeftMotor, LEFT);		
+                mav(RightMotor, RIGHT);	
+            }
             
             if(abs(LEFT) < abs(speedL*0.5)) L = true;			// check if sensors
             if(abs(RIGHT) < abs(speedR*0.5)) R = true;			// are near black tape
             
-            if(direction && speedL > minSpeed && L) speedL -= 15;		// slowing down calibrating
-            if(!direction && speedL < -minSpeed && L) speedL += 15;		// on left TopHat
+            if(direction && speedL > minSpeed && L) speedL -= maxSpeed/100;		// slowing down calibrating
+            if(!direction && speedL < -minSpeed && L) speedL += maxSpeed/100;		// on left TopHat
             
-            if(direction && speedR > minSpeed && R) speedR -= 15;		// slowing down calibrating
-            if(!direction && speedR < -minSpeed && R) speedR += 15;		// on right TopHat     
+            if(direction && speedR > minSpeed && R) speedR -= maxSpeed/100;		// slowing down calibrating
+            if(!direction && speedR < -minSpeed && R) speedR += maxSpeed/100;		// on right TopHat     
             
             if(!direction && speedL > -minSpeed) speedL = -minSpeed;	// min speed border
             if(!direction && speedR > -minSpeed) speedR = -minSpeed;	
@@ -45,10 +157,15 @@ int LineStab(bool direction) {
             if(direction && speedL < minSpeed) speedL = minSpeed;		// max speed border
             if(direction && speedR < minSpeed) speedR = minSpeed;
             if(abs(speedL) <= minSpeed && abs(speedR) <= minSpeed && abs(RIGHT) < minSpeed && abs(LEFT) < minSpeed) i++;	// both sensors calibrated
-            if(!L && !R && systime()-t > 3000) {				// Line not found, disable Line Stab
+            if(!L && !R && systime()-t > TRESHOLD) {				// Line not found, disable Line Stab
              	return -1;   
             }
         }
-  	Stop(1);
+  	if(Chasis) {
+        create_stop();   
+    } else {
+        freeze(LeftMotor);
+        freeze(RightMotor);
+    }
     return 0;
 }
